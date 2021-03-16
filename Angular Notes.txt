@@ -1,0 +1,679 @@
+ng cli command.
+
+ng new project-name -------> create new project
+ng serve / ng serve -o / ng serve --open ---------> run angular project
+ng g c componant-name / ng generate componant componant-name -----> create new componant
+ng g class class-name ------> create class
+ng g service service-name -----> create new service
+ng g pipe -----> create pipe defination
+ng g directive -----> generate new directive
+ng g guard file-name -----> to create auth guard
+
+
+string interpolation
+property binding
+
+two way binding = string interpolation + property binding
+
+
+directives
+   built in directives(structural)
+     *ngIf:
+     ex. <p *ngIf="condition">some text</p>
+
+     if with else
+
+        <p *ngIf="condition;else sometag">some text</p>
+	<ng-template #sometag>
+          <p>another text</p>
+	</ng-template> or
+
+	<div *ngIf="isValid;then content else other_content">here is ignored</div>    
+	<ng-template #content>content here...</ng-template>
+	<ng-template #other_content>other content here...</ng-template>
+
+     *ngFor:
+        <p *ngFor="let item of items"></p>
+	<p *ngFor="let item of items; let i = index"></p>
+
+     
+     [ngSwitch]:
+
+	<div [ngSwitch] = "value">
+	   <p *ngSwitchCase = "1"> Some Text1 </p>
+	   <p *ngSwitchCase = "5"> Some Text2 </p>
+	   <p *ngSwitchCase = "10"> Some Text3 </p>
+	   <p *ngSwitchDefault> Some Text4 </p>
+        </div>
+
+     [ngStyle]:
+         <p [ngStyle] = "{'background-color':getColor()}"> or
+         <p [ngStyle] = "{backgroundColor:getColor()}">
+
+
+     [ngClass]:
+        <some-element [ngClass]="'first second'">...</some-element>
+	<some-element [ngClass]="['first', 'second']">...</some-element>
+	<some-element [ngClass]="{'first': true, 'second': true, 'third': false}">...</some-element>
+	<some-element [ngClass]="stringExp|arrayExp|objExp">...</some-element>
+	<some-element [ngClass]="{'class1 class2 class3' : true}">...</some-element>
+        
+	with the following examples you can use 'IF ELSE'
+
+	<p class="{{condition ? 'checkedClass' : 'uncheckedClass'}}">
+	<p [ngClass]="condition ? 'checkedClass' : 'uncheckedClass'">
+	<p [ngClass]="[condition ? 'checkedClass' : 'uncheckedClass']">
+
+
+passing data from parent to child using @input decorator
+passing data from child to parent using @output decorator and event emmiter
+
+[Note] parent componant is the componant where child selecter is used.
+
+
+view encapsulation - is used to set css property globaly
+to use add encapsulation in @componant
+ex encapsulation : ViewEncapsulation.None
+default is emulated
+
+
+@viewChild('#reference') xyz : ElementRef;
+console.log(xyz.nativeElement.value)
+
+<ng-content></ng-content>
+
+ng life-cycle hooks-------------
+   
+   1) ngOnChanges(changes : SimpleChanges):void{}
+      called after any change comes from parent ex @input
+      [note] detect changes for variables passed by value
+
+   2) ngOnInit()
+      called once after ngOnChanges get called
+      ideal for assigning a value or connetivity
+
+   3) ngDoCheck()
+      detect changes for variable passed by reference such as arrays, objects which are not detected by 
+      ngOnChanges() as the old value and the new value have the same reference
+
+   4) ngAfterContentInit()
+      executed only once after ngDocheck()
+      ideal for one time calculation
+
+   5) ngAfterContentChecked()
+      first executed after ngAfterContentInit() then executed every time after ngDocheck() or ngOnChanges()
+      ideal for calculating variables from ngDoCheck() or ngOnChanges()
+
+   6) ngAfterViewInit()
+       Execute after Angular initializes the component's views and child views.
+       Called once after the first ngAfterContentChecked().
+       This is why @ViewChild() depends on it. You can't access view members before they are rendered.
+
+   7) ngAfterViewChecked()
+      Respond after Angular checks the component's views and child views.
+      Called after the ngAfterViewInit and every subsequent ngAfterContentChecked().
+
+custome directives:
+
+   create a file in componant example.directive.ts and register it on app.module in declarations
+   you can create directive using cli by ng g d directive_name or ng generete directive directive_name
+
+   <p sampleDirective > some text </p>
+   
+   @Directive({
+      selector : "[sampleDirective]"
+   })
+ 
+   export class exampleDirective implement OnInit{
+	constructor(private elementReF : ElementRef){}
+	
+	ngOnInit(){
+	    this.elementRef.nativeElement.style.backgroundColor = 'red';
+	}
+    }
+
+   [note] dont access dom directly like this insted use renderer2 as follow
+
+ <p sampleDirective > some text </p>
+   
+   @Directive({
+      selector : "[sampleDirective]"
+   })
+ 
+   export class exampleDirective implement OnInit{
+	constructor(private elementReF : ElementRef, private renderer : Renderer2){}
+	
+	ngOnInit(){
+	    this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'blue', optional_flag)
+	}
+    }
+
+directive with @Hostlistener
+
+   @Directive({
+      selector : "[sampleDirective]"
+   })
+ 
+   export class exampleDirective implement OnInit{
+	constructor(private elementReF : ElementRef, private renderer : Renderer2){}
+
+	@Hostlistener('mouseenter') method_name1(event_data : Event){
+	    this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'blue', optional_flag)
+        }
+
+        @Hostlistener('mouseleave') method_name2(event_data : Event){
+	    this.renderer.setStyle(this.elementRef.nativeElement, 'background-color', 'red', optional_flag)
+        }
+    }
+
+@HostBinding
+ 
+    @Directive({
+      selector : "[sampleDirective]"
+   })
+ 
+   export class exampleDirective implement OnInit{
+	
+	@HostBinding('style.backgroundColor') bgColor : string = 'transperent';
+		
+	constructor(private elementReF : ElementRef, private renderer : Renderer2){}
+
+	@Hostlistener('mouseenter') method_name1(event_data : Event){
+	    this.bgColor = 'red'
+        }
+
+        @Hostlistener('mouseleave') method_name2(event_data : Event){
+	    this.bgColor = 'transperent'
+        }
+    }
+
+
+
+Services:
+   
+   is used to communicate between two cross componant(sibling componant)
+
+   priority hirarchy:
+      app.module ---> app.componant ----> any other componant
+
+   if we provides service in app.module the same service instance is available throughout the project.
+   if we provides service in app.componant then the instance is available to app.componant and to child
+   child componant same aplicable to any other componant. unless we override and provides service in that componant
+
+   to provide service add provides in @compent or in app.modules provides array.
+   ex.
+	@Component({
+  	selector: 'app-parent',
+  	templateUrl: './parent.component.html',
+  	styleUrls: ['./parent.component.css'],
+	provides:[../sample.service.ts]
+	})
+	
+   we can inject one service into another using the @injectable decorator.
+
+
+Routing with angular:
+
+	routing is use to render page dynamically
+        to use router you have to use following configuration
+
+	import {Routes} from '@angular/router'
+
+        const appRouters : Routes = [
+	   {path : '', componant:HomeComponant},
+	   {path : 'users', componant:UsersComponant},
+	   {path : 'user:id', componant:UsersComponant}
+	];
+	
+	in app.module register appRouters in imports array as
+	
+	RouterModule.forRoute(appRouters)
+
+	and in html use folowing tag to render view dynamically
+
+	<router-outlet></router-outlet>
+
+	to navigate routing using link use routerLink insted of href
+	ex. <a routerLink="/users"> users </a> or <a [routerLink]="['/users' , id]"> users </a>
+	[note] - leading slash(/) make it absolute path relative path start from the app.componant
+
+	for active link you can use follwing property binding
+	<a routerLink="/users" routerLinkActive="class_name"> users </a>
+	for home or empty path
+	<a routerLink="/users" routerLinkActive="class_name" [routerLinkActiveOptions] = "{exact:true}"> users </a>
+
+	if you want to programatically change the route
+	inject the follwing in constructor
+
+	constructor(private router : Router){}
+	
+	and use the follwing code to route the page
+
+	this.router.navigate(['/users'])
+
+	[note] - if you want to mention relative path in navigate method it dont work bcoz it dont know which componant it related to
+		 to solve this
+		
+		 constructor(private route : ActivatedRoute, private router : Router){}
+		 this.router.navigate(['users'], {relativeTo:this.route})
+
+	if you want to retrive id from the path you can do following
+	constructor(private route : ActivatedRoute){}
+	this.id = this.route.snapshot.params['id']; or you can subscribe
+	this.id = this.route.params.subscribe((param : Param) => {
+	   this.id = param['id'];
+	});
+
+	you can also pass queryparam and fragment in route path
+	<a routerLink="/users" [queryParams]="{'ord':''asc}" [fragment]="'loading'"> users </a>
+	programatically:
+		this.router.navigate(['/users'], {queryParams : {'ord':'asc'}, fragment : 'loading'})
+	and to retrive param and fragment
+	this.route.snapshot.queryParams;
+	this.route.snapshot.fragment; or
+	this.route.queryParams.subscribe()
+	this.route.fragment.subscribe()
+
+	[note] - to preserve query param add following to navigate method.
+	{ queryParamsHandling: "merge or preserve" }
+	merge the old parma with new.
+	preserve replace new pram with old
+
+	child router(nested router):
+		const appRouters : Routes = [
+		{path : '', componant:HomeComponant},
+		{path : 'users', componant:UsersComponant, children : [
+		    {path : ':id', componant:UsersComponant}		
+		]},
+	];
+
+	some other route property.
+	1. redirectTo
+	2. wildcard(**) if page not found
+	3. pathMatch
+	4. data(to pass static data)
+	const appRouters : Routes = [
+		{path : '', componant:HomeComponant, pathMatch : 'full', data : {'name':'shubham'}},
+		{path : '**', redirectTo : '/'},		
+		]},
+
+Gurading route with canActivate or canActivateChild
+
+there are other two guard aslo 1. canDeactivate, 2. resolve
+
+import {
+  CanActivate,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+  Router,
+  CanActivateChild
+} from '@angular/router';
+import { Observable } from 'rxjs/Observable';
+import { Injectable } from '@angular/core';
+
+import { AuthService } from './auth.service';
+
+@Injectable()
+export class AuthGuard implements CanActivate, CanActivateChild {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  canActivate(route: ActivatedRouteSnapshot,
+              state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    return this.authService.isAuthenticated()
+      .then(
+        (authenticated: boolean) => {
+          if (authenticated) {
+            return true;
+          } else {
+            this.router.navigate(['/']);
+          }
+        }
+      );
+  }
+
+  canActivateChild(route: ActivatedRouteSnapshot,
+                   state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    return this.canActivate(route, state);
+  }
+}
+
+after this guard route with including following in path
+canActivate: [AuthGuard]
+
+
+Observable:
+
+	import { interval, Subscription } from 'rxjs';
+	ex. export class HomeComponent implements OnInit, OnDestroy {
+
+ 	 private firstObsSubscription: Subscription;
+		
+	  constructor() {
+	  }
+	  ngOnInit() {
+	    this.firstObsSubscription = interval(1000).subscribe(count => {
+	      console.log(count);
+	    });
+	  }
+	  ngOnDestroy(): void {
+	    this.firstObsSubscription.unsubscribe();
+	  }
+	}
+
+custom Observable:
+
+	const customIntervalObservable = Observable.create(observer => {
+  	  let count = 0;
+ 	  setInterval(() => {
+          observer.next(count);
+          if (count === 5) {
+          observer.complete();
+          }
+         if (count > 3) {
+          observer.error(new Error('Count is greater 3!'));
+         }
+          count++;
+   	   }, 1000);
+ 	});
+
+   	this.firstObsSubscription = customIntervalObservable.subscribe(data => {
+  	  console.log(data);
+  	  }, error => {
+ 	  console.log(error);
+ 	  alert(error.message);
+	  }, () => {
+	  console.log('Completed!');
+	  });
+	}
+observable operator:
+	
+	you can use operator to modify or change data of observable before subscribe.
+	
+	import { map, filter, tap .... } from 'rxjs/operators';
+	
+	this.firstObsSubscription = customIntervalObservable.pipe(filter(data => {
+     	 return data > 0;
+  	  }), map((data: number) => {
+ 	     return 'Round: ' + (data + 1);
+ 	  })).subscribe(data => {
+  	  console.log(data);
+  	  }, error => {
+ 	  console.log(error);
+ 	  alert(error.message);
+	  }, () => {
+	  console.log('Completed!');
+	  });
+	}
+
+	exhaustMap ----> Projects each source value to an Observable which is merged in the output   
+			 Observable only if the previous projected Observable has completed.
+
+[Note] - use subject from rxjs insted of EventEmmitor
+
+	import {Subject} from 'rxjs'
+	 
+	eventEx = new Subject<string>();
+
+	to emmit use next() method insted of emmit()
+	this.eventEx.next('shubham');
+
+	and then subscribe it...
+	you can not use subject to emmit event in @output in that case use angular EventEmmitor.
+
+	Behavioralsubject('default value')
+
+Angular Form(Reactive form)		
+	
+	to use reactive forms register reactive form module in app.module file
+	import { ReactiveFormsModule } from '@angular/forms' and add ReactiveFormsModule  to imports array
+
+	create a FormGroup
+	
+	import {FormGroup, FormControl} from '@angular/forms'
+
+	formObj : FormGroup;
+	
+	ngOnInit(){
+	   this.formObj = new FormGroup({
+		'name' : new FormControl(null),
+		'city' : new FormControl(null, validators.required ),
+		'email' : new FormControl(null, [validators.required, validators.email]),
+		'gender' : new FormControl('male')
+	   })
+	}
+
+	and then on form tag in template sync form object by following
+
+	<form [formGroup]="formObj" (ngSubmit)="formSubmit()">
+	   <input type="text" formControlName = "name">
+	</form>
+
+
+	you can access FormControl as
+
+	this.formObj.get('name')
+
+    nested FormGroup:
+	
+	ngOnInit(){
+	   this.formObj = new FormGroup({
+		'profile' = new FormGroup({
+		   'name' : new FormControl(null),
+		   'city' : new FormControl(null, validators.required ),
+		   'email' : new FormControl(null, [validators.required, validators.email])
+		}),
+		'gender' : new FormControl('male')
+	   })
+	}
+	
+	to properly run nested grouping you have to group those element.
+
+	<form [formGroup]="formObj" (ngSubmit)="formSubmit()">
+	   <div formGoupName = "profile">
+		<input type="text" formControlName = "name">
+	   <div>
+	</form>
+
+	
+	you can access Nested FormControl as
+
+	this.formObj.get('profile.name')
+
+   FormArray:
+	ngOnInit(){
+	   this.formObj = new FormGroup({
+		'profile' = new FormGroup({
+		   'name' : new FormControl(null),
+		   'city' : new FormControl(null, validators.required ),
+		   'email' : new FormControl(null, [validators.required, validators.email])
+		}),
+		'gender' : new FormControl('male'),
+		'hobbies' : new FormArray([])
+	   })
+	}
+	
+	addHobbies(){
+	   (<FormArray>this.formObj.get('hobbies')).push(new FormControl(null))
+	}
+
+	to dynamically add form control through formArray
+
+	<form [formGroup]="formObj" (ngSubmit)="formSubmit()">
+	   <div formGoupName = "profile">
+		<input type="text" formControlName = "name">
+	   <div>
+	   <div formArrayName = "hobbies">
+		<button (click)='addHobbies()' type="button">Add Hobies</button>
+		<div *ngFor = "let item of formObj.get(hobbies).controls; let i = index">
+		   <input type="text" [formControlName] = "i">	
+		</div>
+	   </div>
+	</form>
+
+
+	[NOTE]
+
+	In the next code, we'll add some code to access the controls of our form array:
+
+	*ngFor="let hobbyControl of signupForm.get('hobbies').controls; let i = index"
+
+	This code will fail as of the latest Angular version.
+
+	You can fix it easily though. Outsource the "get the controls" logic into a method of your component code (the .ts file):
+
+	getControls() {
+	  return (<FormArray>this.signupForm.get('hobbies')).controls;
+	}
+	In the template, you can then use:
+
+	*ngFor="let hobbyControl of getControls(); let i = index"
+
+	Alternatively, you can set up a getter and use an alternative type casting syntax:
+
+	get controls() {
+	  return (this.signupForm.get('hobbies') as FormArray).controls;
+	}
+	and then in the template:
+
+	*ngFor="let hobbyControl of controls; let i = index"
+
+	This adjustment is required due to the way TS works and Angular parses your templates (it doesn't understand TS there).
+
+        --------------------------------------------
+
+   on FormControl you have 2 different observable
+
+	1) this.formObj.valueChanges.subscribe(value => {
+	      console.log(value) 
+	   })   ------> emmit on every change value in form
+
+	2) this.formObj.statusChanges.subscribe(status => {
+	      console.log(status) 
+	   })   ------> gives valid or invalid status
+
+   setVslue and patchValue
+
+	this.formObj.setValue({
+	   'profile' = new FormGroup({
+	      'name' : 'shubham',
+	      'city' : 'pune',
+	      'email' : 'spchavhan32@gmail.com'
+            }),
+	   'gender' : 'male',
+	   'hobbies' : new FormArray([])
+	})
+
+	use to set All values
+	to set some value use patchvalue.
+
+you can use formbuilder by injecting it.
+	it has three method, group(), array(), control()
+
+	constructor(private fb : FormBuilder){}
+
+
+	this.formObj = this.fb.group({
+		'profile' = this.fb.group({
+		   'name' : [null],
+		   'city' : [null],
+		   'email' : [null]
+		}),
+		'gender' : [null]
+	   })
+
+Angular http:
+
+	import { HttpClientModule } from '@angular/common/http' and add it to imports array
+
+	constructor(private http : HttpClient)	
+
+	this.http.get<type>('url').subscribe(response_body => {});
+	this.http.post('url',post_data).subscribe(response_body	 => {});
+
+	this.http.get('url').map(data => {}).subscribe(data => {})
+	this.http.get('url').pipe(map(data => {}), filter(data => {}), ...).subscribe(response_body	 => {});
+	this.http.post('url',post_data).subscribe(response_body	 => {}, error => {}, () => {'onCompleted' callback.});
+
+	adding header:
+		this.http.get('url',{headers : new HttpHeades({'Authorization':'Token dfjdnfkjfjnej', ...})})
+		this.http.post('url',post_data,{headers : new HttpHeades({'Authorization':'Token dfjdnfkjfjnej', ...})})
+
+	adding params:
+		this.http.get('url',{params: new HttpParams().set('ard','asc')})
+	
+	setting multiple params:
+		let params = new HttpParams()
+		params = params.append('ord','asc')
+		params = params.append('city','pune')
+
+		this.http.get('url',{params:params})
+
+	[NOTE] Angular return response body data({observe : 'body'}) as default you can change it by adding observe.
+
+	this.http.get('url',{observe : 'body'}) ----> give response body data.
+	this.http.get('url',{observe : 'response'}) ----> give full response object.
+	this.http.get('url',{observe : 'event'}).pipe(tap(event => {
+	   if(event.type === HttpEventType.Sent){
+		console.log('request has sent...');
+	   }
+	   if (event.type === HttpEventType.DownloadProgress) {
+        	console.log("download progress");
+           }
+           if (event.type === HttpEventType.Response) {
+        	console.log("donwload completed");
+           } ...
+	})) ----> accessing event between req and res.
+
+	[NOTE] tap ----> executing code or do some calculation without altering data like map or reduce.
+
+	Intercepter: ----> use to modify req and res object for every http request response. to create
+
+	import {
+	  HttpInterceptor,
+	  HttpRequest,
+	  HttpHandler
+	} from '@angular/common/http';
+
+	export class AuthInterceptorService implements HttpInterceptor {
+	  intercept(req: HttpRequest<any>, next: HttpHandler) {
+	    const modifiedRequest = req.clone({
+	      headers: req.headers.append('Auth', 'xyz')
+	    });
+	    return next.handle(modifiedRequest);
+	  }
+	}
+
+	after this register it to providers in app module like
+
+	 providers: [
+	    {
+	      provide: HTTP_INTERCEPTORS,
+	      useClass: LoggingInterceptorService,
+	      multi: true
+	    },
+	    {
+	      provide: HTTP_INTERCEPTORS,
+	      useClass: AuthInterceptorService,
+	      multi: true
+	    } ...
+	  ]
+
+	modify response object with interceptor using pipe.
+
+	export class LoggingInterceptorService implements HttpInterceptor {
+	intercept(req: HttpRequest<any>, next: HttpHandler) {
+	console.log('Outgoing request');
+    	console.log(req.url);
+    	console.log(req.headers);
+    	return next.handle(req).pipe(
+      		tap(event => {
+        	if (event.type === HttpEventType.Response) {
+          		console.log('Incoming response');
+          		console.log(event.body);
+        		}
+      		})
+    		);
+  		}
+	}
+
+	[NOTE] you can only use event observe in response modification even observe set to anythin in httpClient

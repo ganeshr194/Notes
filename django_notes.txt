@@ -1,0 +1,76 @@
+
+
+
+middleware-
+
+  If you want perform some operation in between request and response objects then you you can use middleware.
+  
+  middleware is a python class or function. 
+
+
+function base middleware:-----------------------------------------
+
+def simple_middleware(get_response):
+    # One-time configuration and initialization.
+
+    def middleware(request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+
+        response = get_response(request)
+
+        # Code to be executed for each request/response after
+        # the view is called.
+
+        return response
+
+    return middleware
+
+
+
+
+class based middleware:-------------------------------------------
+
+it contains two mandatory method and 3 optional method
+
+class SimpleMiddleware:
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+        # One-time configuration and initialization.
+
+    def __call__(self, request):
+        # Code to be executed for each request before
+        # the view (and later middleware) are called.
+
+        response = self.get_response(request)
+
+        # Code to be executed for each request/response after
+        # the view is called.
+
+        return response
+
+    def process_exception(self, request, exception):
+  
+        #call when view function reise an exception
+	
+	return HttpResponse
+
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+
+        #call exactly before view function called is called       
+	#if return None. view function is executed        
+
+	return None or HttpResponse
+          
+        
+
+
+    def process_template_response(self, request, response):
+
+        #called exactly after view function executed
+	#note - only called if view return TemplateResponse
+
+        return response
+

@@ -1,0 +1,489 @@
+				              Git Commands
+
+
+    git init ------> create new empty git repository locally in current working directory
+    git init <directory> ------> create new empty git repository locally in specified directory
+    git init -b main/master -----> create new empty git repository with master or main branch
+
+
+Low level git commands (not important):
+
+    git hash-object -----> to create git object manually
+    ex. echo 'hello' | git hash-object --stdin -w
+
+    git cat-file -p <hash> ------> content of the object
+    git cat-file -s <hash> ------> size of the object
+    git cat-file -t <hash> ------> type of the object
+
+    git mktree
+    first create a file with object information
+    ex. filename.txt
+        permission_type obj_type <hash> filename1.txt
+        permission_type obj_type <hash> filename2.txt
+    then create tree
+    ex. cat filename.txt | git mktree
+
+    git read-tree <hash>
+    staging files from git repository to staging area.
+
+    git ls-files ----> list files from staging area
+    git ls-files -s ----> list files from staging area with statistic
+
+    git checkout-index -a
+    staging file from staging area to working directory.
+
+
+Configure git author name and git email
+
+    git config --list/-l ------> list all configuration setting
+
+    git config --global user.name <name> -----> configure username globally
+    ex. git config --global user.name "shubham chavhan"
+
+    git config --global user.email <email> -----> configure email globally
+ 
+    git config user.name <name>   --|------> configure name/email locally
+    git config user.email <email> --|
+
+
+Basic git command
+
+    git status ------> displays the state of the working directory and the staging area
+
+    git add filename ------> add file to staging area from working directory
+    git add . ------> add all modified/untrack files to staging area from current working directory.
+    git add <directory> -----> add all modified/untrack files to staging area from specified working directory.
+
+    git commit or git commit -m "messege" ------> add all changes from staging area to git repository.
+    git commit -a -m "messege" ------> staging + commit
+
+    git log -----> list history of previous commits
+   
+    git checkout <branch_name> ----> this will change the head position to provided branch
+    git checkout <commit> ------> this will change the head position to provided hash(commit)
+
+    git diff ----> show the changes made in working directory that have not been staged.
+    git diff <hash1> <hash2> -----> show changes bewteen two commits
+
+
+git branches
+
+    branch is just reference to a commit. default branch is master.
+
+    git branch or git branch --list -----> list all branch from local repositoy
+    git branch -r/--remote -----> list all branch from remote repository
+    git branch -a/--all -----> list all branch from both remote and local repository
+    git branch -v -----> list branch with sha1 and  and commit subject line for each head.
+    git branch -vv -----> list branch with sha1 and  and commit subject line for each head along with
+                          corresponding upstream branch
+    
+    git branch -m <old_name> <new_name> -----> rename branch while pointing to any branch
+    git branch -m <new_name>   ------> rename current checkout branch
+
+    git branch <branch_name> -----> create new branch
+    ex. git branch feature-1
+
+    git branch <branch_name> <hash>/<target_brach_name> ----> will create a new branch at the provided hash or
+							      branch name(target_brach_name)
+
+    git checkout -b <branch_name> ------> creates a new branch and checkout newly created branch as well
+    git checkout -b <branch_name> <hash>/<target_brach_name> ----> will create a new branch at the provided hash or
+							      branch name(target_brach_name) and checkout new branch
+
+    git branch -d <branch_name> ------> delete a branch with specified branch name.
+    git branch -D <branch_name> ------> force delete branch
+
+
+git merge
+
+    git merge will integrate two diff branch into one.
+
+    merging process:
+  
+        - create a new ex. feature1 branch from another branch(like master)
+        - commit your changes to feature branch
+        - checkout receiving branch in our case master branch
+        - merge feature1 branch to current receiving branch(master)
+
+    git merge <branch_name> -----> merge <branch_name> into current checkout branch
+    ex. git merge feature1 -----> merge feature1 branch into master
+
+    git merge <branch_name> -m "msg" -----> merge branches with merge messege
+
+    git perform two types of merge depend on the commits made in both braches.
+        
+        - fast-forward merge -----> perform when receiving branch has no further commit. git simply
+                                    move head position of receiving branch to merging branch
+   
+        - three-way-merge ------> perform when receiving branch has further commits. in this case git create
+                                  a new commit which point to both receiving branch and merging branch and
+                                  move head that commit.
+
+        in three-way-merge extra merge commit will be created
+
+    merge conflicts:
+
+        - when same file or same code will change in both branch then, while performing merging, merge conflict
+          will be created
+        - you have to solve conflicts manually in that file or code
+        - after solving conflicts you can mark them as resolved  by adding changes to staging area (git add .)
+        - finally you can commit the chnages (git commit -m "messege"). at that point you will be able to switch 
+          branches again
+
+    git merge --abort -----> abort merge process when conflicts occur during merging.
+
+
+
+git remote commands
+
+    git clone <repository_url> -----> clone(copy) remote repository to local machine.
+
+    [note] default name for git remote repository is origin. you can have multiple remote repository.
+
+    git remote -----> show list of remote repository for local git repository
+    git remote -v -----> show list of remote repository with fetch and push url
+    git remote show <remote_name> -----> show remote repository with statistic
+        ex. git remote show origin
+
+    git remote add origin <remote_URL> ------> add remote repository with name origin.
+    [note] when clone repository, no need to run this command.
+
+    git remote remove <remote_repo_name> ------> remove remote repository.
+	ex. git remote remove origin
+   
+    git fetch -----> fetch all the changes from remote repository to local repository.
+                    git fetch only update local repo. it does not update staging area and working directory.
+                    to update staging area and working directory you have run following command
+
+    git merge FETCH_HEAD -----> it update all changes from local repository to staging area and working directory.
+
+    git pull ------> git fetch + git merge FETCH_HEAD
+
+    git push -----> push all local changes to remote repository
+
+    git push --set-upstream <remote_name> <branch_name> or 
+    git push -u <remote_name> <branch_name> ------> create remote branch based on local branch.
+        ex. git push -u origin feature-1.
+               
+    git push origin -d <branch_name> -----> delete remote branch.
+
+    git remote prune origin           |
+    git fetch -p/--prune              |------> remove tracking of remote deleted branch locally
+    git remote update origin --prune  |
+
+    git show-ref -----> show references for local and remote
+    git show-ref <branch_name> -----> show reference for perticular branch
+
+
+storing username and password:
+
+    if you use git push command then it will ask you a username and password every time you push a code, which is annoing.
+    to avoid this you can store username and password in git credential.helper as follow.
+
+	git config credential.helper cache ----> this will store credential locally default for 15 min. you can specify time as follow
+	git config credential.helper "cache --timeout=3600" -----> this will store credential locally for 1h.
+	git config credential.helper store --------> this will store credential locally permanently.
+
+    if you want to store credential globally you have to use --global flag as follow.
+
+	git config --global credential.helper store.
+
+    [Note] - Don't set credential globally in store or cache if you have multiple github account on same machine.
+
+    
+
+storing username and password using git credential manager:
+
+    if you use windows credential manager then git credential manager will store the same username and password on for all github account
+							      which entered for the first time. this lead to pass same creadential across 
+							      multiple account. to avoid this use fillowing command.
+    
+    git config --global credential.useHttpPath true ----> storing this config will save username and password for diff github repo
+							  in credential manager. you have to enter creadential only once for first time.
+
+
+git tags
+
+    Git has the ability to tag specific points in a repository’s history as being important. Typically,
+    people use this functionality to mark release points (v1.0, v2.0 and so on)
+
+    git tag <tag_name> ------> create a lightweight tag
+    ex. git tag v1.0.0 create tag to last commit to checkout branch
+
+    git tag -a <tag_name> -m "messege" ------> create a anotated tag to last commit to checkout branch
+    ex. git tag -a v1.0.0 -m "tag created"
+    
+    git tag <tag_name> <hash> ------> created tag to a specific commit to checkout branch
+    ex. git tag v1.0.0 efg5a7
+
+    git tag ------> to show list of all tag
+    
+    git show v1.0.0 ------> show details of a specific tag
+
+    git tag -l "v1.*" -------> list all tags stating with v1.
+
+    git push origin --tags or git push tags ------> push all tags created localy to a remote
+    
+    git push origin <tag_name> ------> push specific tag to remote
+    ex. git push origin v1.0.0
+
+    git tag -d <tag_name> ------> delete a specific tag locally
+    ex. git tag -d v1.0.0
+    
+    git push origin -d <tag_name> -------> delete a specific tag from a remote repository
+
+    git tag -d <tag_name> <tag_name> -------> delete multiple tag from locally
+    ex. git tag -d v1.0.0 v1.0.1
+    
+    git push origin -d <tag_name> -------> delete multiple tag from remote
+    ex. git push origin -d v1.0.0 v1.1.0
+
+    [Note] ------> you can not checkout tags like branch or commit but you can create a branch
+                   from a tag which will create a new branch with all changes with that commit
+
+        git checkout -b <branch_name> <tag_name>
+
+
+git rebase
+
+    rebase is two step process:
+
+        first, checkout branch which to be rebase
+        ex. git checkout feature1
+
+        and rebase branch on the top of the base branch
+        ex. git rebase master
+
+        second, checkout base branch into which merging to be done
+        ex. git checkout master'
+
+        and merge branch which to be rebase into base branch
+        ex. git merge feature1
+
+        [Merge preserves history whereas rebase rewrites it.]
+
+        [note] while rebasing, conflicts may be occure. you have to resovle conflicts manually.
+               after solving conflicts you can mark them as resolved by adding them to index(staging area)
+               and continue rebasing by (git rebase --continue) command
+
+
+detached head
+
+    if you checkout to a specific commit, you are in detached head state. you can look around,
+    make experimented changes and commit them. and you can discard any commit you make in this state
+    without impacting any other branches by performing another checkout
+
+    ex. git checkout a7ccf8
+
+    if you want to retain experimental changes you can checkout by using -b command
+
+    ex. git checkout -b <branch_name>
+
+
+git advance
+ 
+    git log advance-
+    
+        git log -5 -----> list no of history of previous commits
+        git log --graph -------> list history of previous commits with graph representation
+        git log --oneline -----> show commits in one line
+        git log --stat -----> show log with statistic
+
+        git lg -------> show pretty log(if not work set following config)
+        alias for git lg:
+            git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit"
+
+    
+        git shortlog -----> The git shortlog command is used to summarize the output of git log(default sorted
+                            by author name) this shows author list with commit messege
+        git shortlog -n -----> sorted by most commited author
+        git shortlog -s -----> show author list with no of commits
+        git shortlog -e -----> this shows author list with commit messege along with author email
+
+        git log --author="author_name" -----> sort git log with author name
+        git log --grep="keyword" -----> sort commit by any keyword user in commit messege
+
+        git log --pretty=format:"format_string" -----> show formatted log
+        ex. git log --pretty=format:"%cn %h" ------> shows log with commitor name and hash
+        [note] you can find format string online
+
+        git log --merges ------> show log of only merge commits
+        git log --no-merges ------> show log of commits except merge commit
+
+    git reset-
+
+        reset are of three type
+            1) soft
+            2) mixed (default)
+            3) hard
+
+        
+        git reset --soft <hash>  
+             ------> this will discard the changes of commit upto given hash(commit)
+                     but keep the changes of staging area and working directory.    
+        
+        git reset <hash> or git reset --mixed <hash>  
+             ------> this will discard the changes of commit and staging area upto given hash(commit)
+                     but keep the changes of working directory.
+
+        git reset --hard <hash>  
+             ------> this will discard the changes of working directory, staging area
+                     and commit upto given hash(commit)
+
+        git reset HEAD~5 -------> reset last five commits(default reset will apply)
+
+        -if you pull after reset you will coming to original state.
+
+        
+        after changes you can push changes to remote repository by following command
+        git push -f origin <branch_name>
+            ex. git push -f origin master
+
+        [note] only use reset if you are working on feature branch with no other collaborator
+               it is not recommended to reset changes in public repo. and branches with other collaborator.
+               use reset with precaution.
+
+
+    git revert-
+            
+        git revert does not modify history like git reset. The git revert command is a forward-moving 
+        undo operation that offers a safe method of undoing changes. instead of deleting or orphaning 
+        commits in the commit history, a revert will create a new commit that inverses the changes specified.
+        git revert is a safer alternative to git reset in regards to losing work
+
+        git revert <hash> ------> revert the changes of specified hash(commit) by creating new commit
+        ex git revert fg4d5dg
+        
+        git revert HEAD -------> revert last commit
+
+    git amend-
+        
+        it is use to modify last commit. if this command use it will modify history(change hash of modified
+        commit). not recommended to use in public repository.
+ 
+        git commit --amend -m "messege"  -----> change last commit messege
+  
+        git commit --amend --author="author_name" ------> change last commit author details
+        ex. git commit --amend --author="shubham chavhan <spchavhan32@gmail.com>"
+
+	git commit --amend --no-edit -----> This is especially useful for if you forgot to add some changes in last commit
+					    or when you want to add more changes without creating new commits by reusing the last commit.
+                             
+
+    git cherry-pick-
+
+        The git cherry-pick command is used to take the change introduced in a single Git commit and 
+        try to re-introduce it as a new commit on the branch you’re currently on. This can be useful to 
+        only take one or two commits from a branch individually rather than merging in the branch which 
+        takes all the changes.
+
+        git cherry-pick <hash> ------> this pick a commit(specified hash) and append that commit to
+                                       checkout brach as a new commit. [note] commit messege will remain same 
+                                       after cherry-pick of that hash(commit).
+
+        to change commit messege you can cherry-pick with --no-commit option. this will just stage the 
+        changes, thens you can commit changes with new messege.
+
+        git commit cherry-pick --no-commit 
+
+
+    git reflog-
+
+        
+        git reflog will maintain record of all the movement of head. it only maintain record of local
+        repository.
+
+        git reflog -----> shows all logs of all branches
+
+        git reflog show <branch_name> -----> show logs of specific branch
+
+
+    git stashing-
+
+        git stash temporarily save changes you've made to your working directory so you can 
+        work on something else, and then come back and re-apply them later on. Stashing is handy if you 
+        need to quickly switch context and work on something else(like on another branch), but you're 
+        mid-way through a code change and aren't quite ready to commit.
+
+        git stash or git stash push -----> temporary save current working changes which to be commit
+
+        git stash -m "msg" or git stash push -m "msg" -----> stash changes with messege
+
+        git stash pop ------> git stash pop applies the top stashed element and removes it from the stack.
+
+        git stash apply ------> git stash apply does the same as git pop but, leaves it in the stash stack.
+
+        git stash list ------> list the stash object
+
+        git stash show ----> show stash statistic
+
+        git stash clear -----> clear all stash object
+
+        git stash drop -----> drop top stash object
+        git stash drop stash@{n} -------> drop specific stash
+
+        By default, git stash will stash only modified and staged tracked files. to stash untrack file
+        you have to use -u or --include-untracked option
+
+        ex. git stash -u
+
+        
+    git squash-
+   
+        Git squash is a technique that helps you to take a series of commits and condense it to a few
+        commits. For example, assume that you have a series of n commits. By squashing you can make all 
+        the n-commits to a single commit.
+
+        It is also used while merging branches. Most people will advise you to always squash the commits
+        and rebase it with the parent branch (like master or develop).
+
+        So when you are squashing and rebasing with the parent branch, the history of the main branch will
+        be very clean and will have only meaningful commits.
+
+        Remember that squashing will change the git history. So if you have already pushed the branch to 
+        remote then it is not advisable to squash.
+
+        to squash and rebase checkout to branch of which commit to squash and then run follwing command
+
+        git rebase -i HEAD~<no_of_commit_to_squash> ---->  this will squash the last no of commit and rebase
+                                                           the branch (-i stands for interactive rebase)
+
+        ex. git rebase -i HEAD~4 ------> this will sqash the last four commit and rebase the branch.
+	[note] before squash and merge above command will vim editor where you have to change pick 
+               to s or sqash in insert mode of all except first.
+
+	or git rebase -i <after-this-commit-sha1>
+
+        you can then merge or rebase this branch into another branch like master.
+
+
+git garbage collection:
+
+    - garbage collection is used to cleanup unreachable(object that has no reference) objects and optimize the code.
+    - garbage collection is triggered after some frequently used commands ex. pull fetch commit etc.
+
+    you can run gc manually using following command
+
+    git gc ----> will run garbage collector
+
+    [Note] - garbage collector does not clean unreachable object if that object has entry in reflog. to do so you have
+	 to manually remove entry from reflog as follow
+ 
+    git reflog expire --expire-unreachable=now --all
+    git gc --prune=now
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

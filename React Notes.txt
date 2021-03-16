@@ -1,0 +1,1247 @@
+npm install -g create-react-app ---> to install react globally
+ex. create-react-app app_name -----> create new react project
+         OR
+npx create-react-app my-app (if you use this you dont have to install create-react-app globally)[recommended by react]
+
+npm start -----> to run react app
+
+
+in react you have one default componant i.e. App.
+
+-----you can create a componant function base as follows
+
+import React from 'react';
+import './Person.css';
+
+const Person = () => {
+    return <h1 className="Person.text">Shubham Chavhan</h1>
+}
+
+export default Person;
+
+
+-----you can create a componant class base as follows
+
+import React, { Componant } from 'react';
+import 'Person.css';
+
+class Person exends Componant{
+    render(){
+	return <h1 className="Person.text">Shubham Chavhan</h1>
+    };
+}
+
+export default Person;
+
+
+you can not return multiple jsx element in both class base and function base componant
+like--
+render(){
+	return (
+	    <h1 className="Person.text">Shubham Chavhan</h1>
+	    <p> some text </p>
+	)
+    };
+
+to return multiple jsx element you have to wrap multiple compont into one as
+render(){
+	return (
+	  <div>
+	    <h1 className="Person.text">Shubham Chavhan</h1>
+	    <p> some text </p>
+	  </div>
+	)
+    };
+
+there is another way to return multiple jsx element i.e using HOC(Higher Order Componant -> same as decorator in python)
+
+
+ex. Auxillary.js
+
+	const Aux = (props) => props.children;
+	
+	export default Aux;
+
+Person.js
+
+    import Aux from './Auxillary' 
+
+    render(){
+	return (
+	  <Aux>
+	    <h1 className="Person.text">Shubham Chavhan</h1>
+	    <p> some text </p>
+	  </Aux>
+	)
+    };    ------> advantage of using this aproach is that it does not render extra div to real dom
+
+[Note] - there is inbult HOC like Aux i.e. Fragment imported from react
+
+    import { Fragment } from 'react'
+
+    render(){
+	return (
+	  <Fragment>
+	    <h1 className="Person.text">Shubham Chavhan</h1>
+	    <p> some text </p>
+	  </Fragment>
+	)
+    };
+
+
+
+[Note] in class based componant you required render() method while in function based not
+
+
+---------using another componnt in componant:
+	
+	class Person exends Componant{
+	    render(){
+		return (
+		    <div>
+		        <h1 className="Person.text">{this.props.name} and {this.props.age}</h1> -------> class based person componant
+			<p>this is child content {this.props.children}</p>
+		    </div>
+		)
+	    };
+	}          OR
+
+
+	const Person = (props) => {
+	   	 return (
+		    <div>
+		        <h1 className="Person.text">{props.name} and {props.age}</h1> -------> child based person componant
+			<p>this is child content {props.children}</p>
+		    </div>
+		)
+	}
+
+
+	class User exends Componant{
+	    render(){
+		return (
+		    <div>
+			<h1>Hiiii</h1>
+			<Person name="shubham" age="29">This is child content</Person>  --------------> User componant
+		    </div>
+		)
+	    };
+	}
+
+	Props:
+	    props allow you to pass data from a parent (wrapping) component to a child (embedded) component
+
+
+
+-------State
+    While props allow you to pass data down the component tree (and hence trigger an UI update),
+    state is used to change the component, well, state from within. Changes to state also trigger an UI update.
+
+    ex.
+	class NewPost extends Component { // state can only be accessed in class-based components!
+	    state = {
+	        counter: 1
+	    };  
+ 
+	    render () { // Needs to be implemented in class-based components! Needs to return some JSX!
+	        return (
+	            <div>{this.state.counter}</div>
+	        );
+	    }
+	}
+
+	[Note] Whenever state  changes, the component will re-render and reflect the new state. 
+
+
+------Handling event:
+	
+	class NewPost extends Component {
+	    state = {
+	        counter: 1,
+		max : 25
+	    };  
+
+	    myFun = () => {
+		// console.log('print something');
+		// this.state.counter = this.state.counter + 1; ---> you cant change state like this you have to use setState property
+
+		this.setState({
+		    counter: 2
+		});
+	    }
+ 
+	    render () {
+	        return (
+	            <div>
+			{this.state.counter}
+			<button onClick={this.myFun}>Count</button>
+		    </div>
+	        );
+	    }
+	}
+
+	keep in mind that when you set just counter value the other value i.e. max will merge into new value.
+
+	[Note] -  https://reactjs.org/docs/events.html#supported-events ----> (react.js supported event)
+
+
+-----Managing state with react hooks.
+
+Before react 16.8 you can manage state only in class based componant but after version 16.8 you can also manage state in 
+function based componant using useState method.
+
+	import React from 'react';
+	import './Person.css';
+
+	const Person = () => {
+
+	    const [counterState, setCounterState] = useState({
+	        counter: 1,
+		max : 25
+	    });
+
+	    myFun = () => {
+		setCounterState({
+		    counter: 2
+		});
+	    }
+
+	    return (
+		<button onClick={this.myFun}>Count</button>
+		{counterState.counter}
+	    )
+	}
+
+	note that when you set the value in above ex. it replace the max value as it does not merge into new state as like class state
+	management
+
+	to overcome this problem you have to explicitly mention that field in setCounterState as
+
+	    myFun = () => {
+		setCounterState({
+		    counter: 2,
+		    max : 25
+		});
+
+	    or
+
+	    create a seperate useState for that property
+
+		const [counterState, setCounterState] = useState({
+	            counter: 1,
+	        });
+
+		const [maxState, setMaxState] = useState({
+	            max : 25
+	        });
+
+----Passing function ref as a props.
+
+	yeh, you can pass functions ref as a props to another componant and from that componant you can call that function
+
+
+	class A exends Componant{
+	    render(){
+		return (
+		    <button onClick={this.props.func}></button>
+		)
+	    };
+	}
+
+	
+	class B exends Componant{
+
+	    fun(){
+		console.log('some text');
+	    }	   
+  
+	    render(){
+		return (
+		    <div func="this.fun">...</div>
+		)
+	    };
+	}
+
+	[Note] - if you want to pass parameter to function on some event then there are two ways.
+
+
+	class ABC exends Componant{
+
+	    fun(name){
+		console.log(name);
+	    }	   
+  
+	    render(){
+		return (
+		    <button onClick = {this.fun.bind(this, 'shubham')}>...</button>
+		)
+	    };
+	} OR
+
+
+	class ABC exends Componant{
+
+	    fun(name){
+		console.log(name);
+	    }	   
+  
+	    render(){
+		return (
+		    <button onClick = {() => this.fun('shubham')}>...</button>
+		)
+	    };
+	}
+
+------- styling with react.
+	as we know we can style react componant by adding css file(importing) in componant. you can aslo aaply inline
+	style as follow (with inline css you can not add sudo selector or media query)
+
+	 
+	class ABC exends Componant{
+
+	    const style = {
+		backgroundColor : 'red',
+		padding : '3 px',
+		border : 'none'
+	    }
+  
+	    render(){
+		return (
+		    <button style={style} onClick = {() => this.fun('shubham')}>...</button>
+		)
+	    };
+	}
+
+	there are some library for advance css styling
+		1) Radium ----> give you access to sudo selector or medis query to inline styling.
+		2) Styled componant ----> give you access to sudo selector or medis query to inline styling.
+
+	[Note] - if you want scope the css file only for that componant you can do the following.
+
+		rename the .css(ex. App.css) file as App.module.css and import it as
+		import some_name from './App.module.css' and to use classes as follow
+		<button className="some_name.class_name">...</button>
+
+------ Rendaring condition dynamically.
+
+	class ABC exends Componant{
+
+	    state = {
+		condition : true
+	    }
+  
+	    render(){
+		return (
+		    <button style={style} onClick = {() => this.fun('shubham')}>...</button>
+		    { this.state.condition ?
+			<div>.... some jsx code ....</div>
+			: <div>.... some another jsx code ....</div> or null
+		    }
+
+		)
+	    };
+	}
+
+	better aproach to outsource ternary condition from return statement as follow
+
+	class ABC exends Componant{
+
+	    state = {
+		condition : true
+	    }
+  
+	    render(){
+		let data = null;
+		if (this.state.condition){
+		   data = <div>.... some jsx code ....</div>
+		}
+		return (
+		    <button style={style} onClick = {() => this.fun('shubham')}>...</button>
+		    { data }
+		)
+	    };
+	}
+
+	[Note] - you can add class or style conditionally as well.
+
+
+---- :List in react.
+
+	class ABC exends Componant{
+
+	    state = {
+		persons : [
+		    {id : 1, name:"shubham", age : 27},
+		    {id : 2, name:"raaj", age : 24},
+		    {id : 3, name:"rahul", age : 27}
+		],
+		condition : true
+	    }
+  
+	    render(){
+
+		let person= null;
+		if (this.state.condition){
+		    person = <div>
+			this.state.persons.map((person, index) => (
+			    return <display name={person.name} age={person.age} key={person.id}></display>
+			))
+		    </div>
+		}
+	
+		return (
+		    <button style={style} onClick = {() => this.fun('shubham')}>...</button>
+		    { data }
+		)
+	    };
+	}
+
+	[Note] when you render a list in react jsx you shoud have to add key property and assign unique value to it.
+
+
+
+Componant lifecycle.
+
+	you only access lifecycle hooks into class based componant.
+
+	constructor() ----> used to initialize state.
+	
+	static getDerivedStateFromProps(prop, state){return state} ---> used when class props chnage and you want update or change state.(to sync props and state)
+
+	shouldComponantUpdate(nextProps ,nextState){return true/false} ----> decide whether to continue or not when update state or props. 
+									     if return false it does not render.
+
+	[note] - if you check for all props or state that change..instead of using shouldComponantUpdate you can extend PureComponant instead of 
+		 componant. this will chack for all the changes so you dont need to implement shouldComponantUpdate method.
+	
+	render() ---> used to return jsx (After render all its child aslo render)
+
+	getSnapshotBeforeUpdate(prevProps, prevState){return snapshot or null} ----> used to last minut dom operation such as getting scrolling position.
+
+	componantDidUpdate(prevProps, prevState, snapshot)
+	[Note] when you update anything in componantDidUpdate it will create a infinite loop. to avoid this perform checks before updating.
+
+	componantDidMount() ----> used to fetch http req. dont update state or called setState here
+
+	componantWillMount() -----> depricated.
+	componantWillRecieveProps(props) -------> depricated.
+
+
+
+HTTP request using react -----
+
+	to use http service in react you have to use some javascript http library ex. axios.
+
+	npm install --save axios
+
+	using axios you can now make http request. ex
+
+	import axios from 'axios'
+
+	class Demo extends Componant{
+
+	    state = {
+	    	post : []
+	    }	
+
+	    componantDidMount(){
+		axios.get('url').then(res => {
+		    this.setState({
+			post : res.data
+		    })
+		}).catch(error => {...})
+	    }
+	
+	    render(){
+		return (
+		    <div>...</div>
+		)
+	    }
+	}
+
+    Interceptor ---
+
+	you can use interceptor to to modify request and response for each http req and res
+
+	you can use interceptor in index.js file
+
+	import axios from 'axios'
+
+	axios.interceptor.request.use(req => {return req}, err => {});
+
+	axios.interceptor.response.use(res => {return res}, err => {});
+
+	Removing Interceptors -----
+		var myInterceptor = axios.interceptors.request.use(function () {/*...*/});
+		axios.interceptors.request.eject(myInterceptor);
+	
+	you can also set some defaults to axios for every req and res.
+
+	axios.defaults.baseURL = 'http://localhost:8000';
+
+	axios.defaults.headers.common['Authorization'] = 'Token cnjkenfjrrmgkrekeknf'; ---> for all req type
+
+	axios.defaults.headers.post['content-type'] = 'application/json'; ---> set default header for post req.
+
+	[Note] if you want diff configuration for some http req and res. you can create a new instance of a axios and use that instance. ex
+
+	create new file axios.js
+
+		import axios from 'axios';
+		
+		const axiosInstance = axios.create({baseURl : 'something'})
+		
+		you can also add headers and other defaults
+
+		axiosInstance.defaults.headers.common......
+	
+		also you can add interceptor for an instance
+
+		axiosInstance.interceptor.req..... also for res. ------and in the end export default axiosInstance
+
+	to use this instance just import axiosInstance (import axiosInstance from './axios') and then
+	
+	axiosInstance.get('')....
+
+
+
+Routing -----------------
+
+	npm install --save react-router react-router-dom
+
+	after installing you have to wrap BrowserRouter to componant for which you have to use routing. the better place for this is
+	index.js or app.js in which you can wrap all the componant.
+
+	App.js
+
+	import BrowswerRouter from 'react-router-dom'
+
+	render(){
+	    return(
+		<BrowserRouter>
+		    <div className="App">
+			<componant></componant> ----> for componant and its child grandchild ... now routing are available
+		    </div>
+		</BrowserRouter>
+	    )
+	}
+
+	After this you are ready to use routing
+
+	import { Route } from 'react-router-dom'
+
+	now use Route to load componant dynamically in any file
+
+	<Route path='/' exact render={() => <h1>some text</h1>} /> ----> this will render some jsx code to the path localhost:3000/
+	[Note] - exact keyword match the exact path.
+
+	to load componant use componant instead of render
+	<Route path='/' exact componant={Users} /> ----> this will load the Users componant to the path localhost:3000/
+
+------- [NOTE] when you use anchor tag(<a href="/"> Click </a>) it will load the page which leads to lost the current state.
+	       to prevent this behaviour use Link tag provided by react-router-dom.
+
+	import { Link } from 'react-router-dom'
+
+	<Link to="/"> Home </Link> or
+	<Link to={{pathname : '/', hash="#submit", search="?ord=asc"}}> Home </Link>
+
+	in home componant we can now access the route properties through props. such as path, search, hash.... directly as we set Link to 
+	that componant. but for the child componant of home the properties through props does not available to access. to avail thoes property
+	to child aslo there are two ways.
+
+	1) Home.js
+
+	      	render(){
+		    return(
+		    <div className="App">
+			<child {...this.props} /> or passing specific property <child match = {this.props.match} />
+		    </div>
+		    ) 
+		}
+
+	2) Using Higher Order Componant
+
+	   Child.js
+	
+	   import { withRouter } from 'react-router-dom';  in child componant and wrap child componant with withrouter
+
+	   export default withRouter(Child);		
+
+
+	when you use /path_name it is absolute path. if you want to use relative path you can do it as follow
+
+	If you're on a component loaded via /posts , to="new"  would lead to example.com/new , NOT example.com/posts/new.
+	To change this behavior, you have to find out which path you're on and add the new fragment to that existing path.
+	You can do that with the url  property of props.match :
+	<Link to={props.match.url + '/new'}>  will lead to example.com/posts/new  when placing this link in a component loaded on /posts.
+
+
+	if you want to style link you can use NavLink instead of Link
+
+	<NavLink to="/"> Home </NavLink> --- this will add active class to the link so now you can add css as follow
+
+	a:hover,
+	a:active,
+	a.active {
+	   some css code;
+	}
+
+	[Note] if you use path ex. / and dont mention exact attribute then it always have css applyed to it
+	[Note] the default name of class is active. if you want to change class name from active to something else add following props to 
+	       NavLink.
+
+	<NavLink exact activeClassName="my-active" to="/"> Home </NavLink> , you can also add inline css property for active class name as
+	<NavLink exact activeClassName="my-active" to="/" activeStyle={{color : 'red'}}> Home </NavLink>
+
+    Dynamic route:
+
+	If you want to add dynamic path route simply add : and dynamic contain name as follow
+
+	<Route path="/:id" /> ----> [Note] - dynamic path route should always be at bottom. you can access dynamic id as
+
+	this.props.match.params.id
+
+    using Swich to load single route ----
+
+	<Route path="/" />
+	<Route path="/users" />
+	<Route path="/user/:id" />
+
+	when you use multiple link as shown above it loads all the matching routes exept exact route. ex. if you nevigate / it will load all routes
+	in above example, to load only one route you have to use switch
+
+	import { Switch } from 'react-router-dom'
+
+	<Switch>
+	    <Route path="/" />
+	    <Route path="/users" />
+	    <Route path="/user/:id" />
+	</Switch>
+
+	in above example only the matching first route will load.
+
+
+    navigating programatically
+
+	this.props.history.push({pathname : '/'}); or
+	this.props.history.push('/');  -------------------> push new page on top of current page so u can nevigate back
+	this.props.history.replace('/'); -------------> replace current page.
+
+
+    Nested Routes -----
+
+	let consider we want to load posts in home.js and in posts.js we want to load single post on clicking list of posts
+
+	Home.js
+
+	    render(){
+		    return(
+		    <div className="App">
+			<Route exact path="/posts" />
+		    </div>
+		    ) 
+		}
+
+	Posts.js
+
+	        render(){
+		    return(
+		    <div className="App">
+			<Route path="/post/:id" />
+		    </div>
+		    ) 
+		}
+
+		the above code will fail to load single post as the path is localhost:3000/user/1 will never load as /post will not load
+
+		to solve this you have to remove exact from /posts route and in posts.js
+
+		render(){
+		    return(
+		    <div className="App">
+			<Route path="/posts/post/:id" />
+		    </div>
+		    ) 
+		} or
+
+		render(){
+		    return(
+		    <div className="App">
+			<Route path={this.props.match.url + '/:id'} />
+		    </div>
+		    ) 
+		}
+
+	Redirecting -----
+
+	import { Redirect } from 'react-router-dom';
+
+	<Redirect from="/" to="/posts" />
+
+
+    Handling 404 -----
+
+	to handle unkown routes. create a link without to props
+	
+	<Route render={() => <h1> Page Not found </h1> }/>
+
+
+    Lazy loading componant.
+
+	import React, { Suspence } from 'react';
+
+	const users = React.lazy(() => import('./posts'));
+
+		render(){
+		    return(
+		    <div className="App">
+			<Route path='/users' render={() => <Suspence fallback={<div>Loading...</div>}> <users /> </Suspence>} />
+		    </div>
+		    ) 
+		}
+
+	the above lazy loading suports in react 16.6+
+	
+
+
+
+React form with Formik--------
+
+	npm install --save formik
+
+	import React from 'react'
+
+	import { useFormik } from 'formik'
+
+	function Person() {
+
+	    const formik = useFormik({
+	        initialValues: {
+	            name: '',
+	            age: '',
+	            city: ''
+	        }
+	    })
+
+	    return (
+	        <div>
+	            <form style={{ marginTop: '50px' }}>
+	                <div className="row">
+	                    <div className="col-md-6">
+	                        <div className="form-group">
+	                            <label>Name</label>
+	                            <input type="text" name="name" id="name" className="form-control" value={formik.values.name} onChange={formik.handleChange}></input>
+	                        </div>
+	                        <div className="form-group">
+	                            <label>Age</label>
+	                            <input type="text" name="age" id="age" className="form-control" value={formik.values.age} onChange={formik.handleChange}></input>
+	                        </div>
+	                        <div className="form-group">
+	                            <label>City</label>
+	                            <input type="text" name="city" id="city" className="form-control" value={formik.values.city} onChange={formik.handleChange}></input>
+	                        </div>
+	                        <div className="form-group">
+	                            <button className="btn btn-success" type="submit">Save</button>
+	                        </div>
+	                    </div>
+	                </div>
+	            </form>
+	        </div>
+	    )
+	}
+
+	export default Person
+
+    submitting form-----
+
+	to submit form data, add onSubmit on form tags as follows
+
+	<form onSubmit={formik.handleSubmit}>...</form>
+
+	and in useFormik add onSubmit method.
+
+	const formik = useFormik({
+	        initialValues: {
+	            name: '',
+	            age: '',
+	            city: ''
+	        },
+		onSubmit : values => {
+		  console.log(values); 
+		}
+	    })
+
+    validating form----
+
+	to validate formik form add validate property in useFormik	
+
+	const formik = useFormik({
+	        initialValues: {
+	            name: '',
+	            age: '',
+	            city: ''
+	        },
+		onSubmit : values => {
+		  console.log(values); 
+		},
+		validate : values => {
+		    let errors = {}
+
+		    if(!values.name){
+			errors.name = 'this field is required';
+		    }
+
+		    if(!values.age){
+			errors.age = 'this field is required';
+		    }else if(values.age < 18){
+			erros.age = 'you are not adult';
+		    }
+		
+		    return errors
+		}
+	    })
+
+	    if your form is invalid then formik.errors object add that errors. if valid formik.errors is empty
+
+	    if invalid you can print error msg like
+	    {formik.error.name ? <span>{formik.errors.name}</span> : null}
+
+	[Note] when you return errors it return error for all the property. so when displaying error it display error msg for all
+	       the field even if one field is touch. to avoid this add onBlur property on input field as follow
+
+	<input type="text" name="city" onBlur={formik.handleBlur} value={formik.values.city} onChange={formik.handleChange}></input>
+
+	and add condition where error msg display as
+
+	{formik.error.name && formik.touched.name ? <span>{formik.errors.name}</span> : null}
+
+	[Note] you can use yup library to add validation rule more easily.
+		
+
+	as we see we have same redundant code on every input fields i.e. onChange, onBlur and value
+
+	<input type="text" name="city" id="city" className="form-control" value={formik.values.city} onChange={formik.handleChange} onBlur(formik.handleChange)></input>
+
+	to remove such redundant code formik privide us a helper method i.e getFieldProps
+
+	<input type="text" name="city" id="city" className="form-control" {...formik.getFieldProps('city')} ></input>
+
+	we have to pass just name attribute to that function
+
+    Formik componant ---- use to reduce boilerplate
+
+	you can alternativly use formik, Form, Field, ErrorMessege componant instead of useFormik hook.
+
+	to use import
+	    import { Formik } from 'formik'
+		
+	    function Person() {
+
+		const initialValue = {
+	            name: '',
+	            age: '',
+	            city: ''
+	        }
+
+		const onSubmit = values => {
+		  console.log(values); 
+		}		
+
+		const validate = values => {
+		    let errors = {}
+
+		    if(!values.name){
+			errors.name = 'this field is required';
+		    }
+
+		    if(!values.age){
+			errors.age = 'this field is required';
+		    }else if(values.age < 18){
+			erros.age = 'you are not adult';
+		    }
+		
+		    return errors
+		}
+
+		 return (
+		        <Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}>
+		            <Form style={{ marginTop: '50px' }} >
+		                <div className="row">
+		                    <div className="col-md-6">
+		                        <div className="form-group">
+		                            <label>Name</label>
+		                            <Field type="text" name="name" id="name" className="form-control"></Field>
+		                            <ErrorMessage name='name' style={{color : 'red'}} />
+		                        </div>
+		                        <div className="form-group">
+		                            <label>Age</label>
+		                            <Field type="text" name="age" id="age" className="form-control"></Field>
+		                            <ErrorMessage name='age' />                        
+					</div>
+		                        <div className="form-group">
+		                            <label>City</label>
+		                            <Field type="text" name="city" id="city" className="form-control" ></Field>
+		                            <ErrorMessage name='city' />                        
+					</div>
+		                        <div className="form-group">
+		                            <button className="btn btn-success" type="submit">Save</button>
+		                        </div>
+		                    </div>
+		                </div>
+		            </Form>
+		        </Formik>
+		    );
+		}
+
+	[Note] ---> when you use ErrorMessege componant you can not apply style or className directly as the error is not wrap in any componant
+		    to solve this add componant property='div' or componant='span' and apply inline style or className.
+			<ErrorMessage name='city' componant='span' class Name="something" />
+
+	[Note] --> bydefault Field render as input... to specify other field you have to use as property.
+
+	<Field as="textarea" type="text" name="city" id="city" className="form-control" ></Field>
+
+    Render props pattern -------------
+
+	<Field name="address">
+	    {
+		console.logs(props);
+		const {field, form, meta} = props;
+		return(
+		    <div>
+			<input type="text" id="address" {...field}>
+			{meta.touched && meta.error ? <div>{meta.error}</div> : null}
+		    </div>
+		)
+	    }
+	</Field>	
+		
+    Nested initial object------
+
+	   const initialValues = {
+	        name: 'shubham',
+	        age: '',
+	        address: {
+	            city: '',
+	            area: ''
+	        }
+	    }
+
+	if you have such nested initial values then in Field and in ErrorMessege you have to write name field as
+
+	 <Field as="input" type="text" name="address.city" id="city" className="form-control" ></Field>
+         <ErrorMessage name='address.city' component='span' className={classes.errorText} />
+
+	and to validate
+
+	 const validate = values => {
+	        let errors = {};
+	        errors.address = {};
+	
+		 if (!values.address.city) {
+	            errors.address.city = 'This field is required';
+	        }
+
+		if (Object.keys(errors.address).length === 0) {
+	            delete errors.address;
+	        }
+		return errors;
+	}
+
+	
+    FieldArray Componant ------
+
+	if you add field dyanamically you can use FieldArray
+
+	import { FieldArray } from 'formik';
+
+	const initialValues = {
+        name: '',
+        age: '',
+        address: {
+            city: '',
+            area: ''
+        },
+        phoneNumber: ['']
+    	}	
+
+	<FieldArray name="phoneNumber">
+            {
+              props => {
+              // console.log(props);
+              const { push, remove, form } = props;
+              const { values } = form;
+              const { phoneNumber } = values;
+              // console.log(phoneNumber);
+              return (
+                  <div>
+                  <label>Phone Number</label>
+                  {
+                       phoneNumber.map((number, index) => {
+                       return <div key={index}>
+                       <div className="row form-group">
+                           <div className="col-8">
+                               <Field name={`phoneNumber[${index}]`} type="text" className="form-control" />
+                           </div>
+                           <div className="col-4">
+                               {index > 0 && <button type="button" className="btn btn-danger" onClick={() => remove(index)}>{' '}-{' '}</button>}
+                           </div>
+                       </div>
+                       </div>
+                     })
+                  }
+                  <ErrorMessage name='phoneNumber' component='span' className={classes.errorText} />
+                  <button className="btn btn-primary" type="button" onClick={() => push('')}>{' '}+{' '}</button>
+                  </div>
+                        )
+                      }
+                  }
+          </FieldArray>
+	
+	some Formik Componant property	
+
+	validationOnChange -- making false dont run validation on every chnage
+	validateOnBlur --- making false dont run validation on blur event occure
+	validateOnMount -- adding only this will validate field on load(when page first time load) whis male isValid property false
+
+	field level validation ----
+
+		const validateName = (value) => {
+		    let error;
+		    if (!value){
+			error = 'some error msg';
+		    }
+		    return error;
+		}
+
+		 <Field type="text" name="name" id="name" className="form-control" validate={validateName} ></Field>
+	         <ErrorMessage name='name' component='span' className={classes.errorText} />
+
+	If you want to access whole formik object then use render prop pattern on Formik as
+
+	<Formik initialValues={initialValues} validate={validate} onSubmit={onSubmit}> 
+	    {
+		formik => {
+		    console.log(formik);
+		    return(<Form>....) ---> return whole form
+		}
+	    }
+	</Formik>
+
+    Disabled the submit button ------
+
+	<button type="submit" disabled="{!formik.isValid}"> Save </button> ----> this disabled the button but not on page load.
+
+	<button type="submit" disabled="{!formik.isValid}"> Save </button> and setting validateOnMount ----> disabled but not recommended
+
+	<button type="submit" disabled="{!(formik.isValid && formik.valid)}"> Save </button> ----> disabled but if form is initially fill it i.e.
+		form is valid but it still disabled the button as dirty is false
+
+    Disabled submit button while form is submittin to server -------
+
+	<button type="submit" disabled="{formik.isSubmitting}"> Save </button>
+
+	is submitting proprty initially is false...
+	when we submit the form it will become true but if any validation error occure it get false
+
+	when submit and there is no validation error occure then isSubmitting is true. we have to set is submitting false manually
+	when form submitted on server successfully as
+
+	    const onSubmit = (values, onSubmit) => {
+		  onSubmit.setSubmitting(false); 
+		}
+
+	[Note] --- onSubmit() function receive two props values and props after submit value.
+
+
+
+React Redux -------------
+
+    configuration -----
+
+	npm install --save redux
+
+	after installing in index.js file
+
+	import { createStore } from 'redux'
+
+	const store = createStore();
+
+
+	After that ---- create n new folder as store and in that folder create reducer.js file
+
+	reducer.js
+
+	    initialState = {
+		counter : 0
+	    }
+	
+	    const reducer = (state = initialState, action) => {
+
+		if (action.type === "INCREMENT"){
+	        return {
+	            counter : state.counter + 1
+	        }
+	    }
+
+		return state;
+	    }
+
+	    export default reducer;
+
+	after creating reducer in index.js file pass that reducer to createStore() as
+
+	import reducer from './store/reducer'
+
+	const store = createStore(reducer);
+
+	this does not enough. you have to connect redux to react to do so install react-redux
+
+	npm install --save react-redux
+
+	and in index.js file
+
+	import { Provider } from 'react-redux';
+
+	and wrap App componant with Provider and pass store as a props ----this avaiable store to all componant
+
+	ReactDOM.render(<Provider store={store}><React.StrictMode><App /></React.StrictMode><Provider>,document.getElementById('root'));
+
+	----- now you can access the state and dispatch actionSS in any other componant as follow
+
+	Counter.js
+
+	import { connect } from 'react-redux'; ----> note connect is function which return HOC
+
+
+	export class Counter extends Component {
+
+	    render() {
+	        return (
+	            <div style={{ backgroundColor: 'pink', padding : '20px' }}>
+	                <h4>Total count</h4>
+	                <h1>{this.props.ctr}</h1>
+	                <button className="btn btn-outline-danger" onClick={this.props.onIncrement}>CLick</button>
+	            </div>
+	        )
+	    }
+	}
+	
+	const mapStateToProps = state => {
+	    return {
+	        ctr: state.counter
+	    };
+	}
+
+	const mapDispatchToProps = dispatch => {
+	    return {
+	        onIncrement: () => dispatch({type : "INCREMENT"})
+	    }
+	}
+
+	export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+
+
+    advance redux....
+
+	INDEX.JS
+
+	import { applyMiddleware } from 'redux';
+
+	const logger = store => {
+	    return next => {
+		return action => {
+		    console.log('middleware dispatch', dispatch);
+		    const result = next(action);
+		    console.log('middleware next state', store.getState());
+		    return result;
+		}
+	    }
+	}
+
+	const store = createStore(reducer, applyMiddleware(logger));
+
+
+    Aync redux.....
+	
+	to handle async code you have to use third party library i.e. redux-thunk [Note] - thunk is a middleware
+
+	npm install --save redux-thunk
+
+	to use redux-thunk you have to adjust your code little bit
+
+	create a actions.js file and in that file add actions const as
+
+	Actions.js
+
+	    export const COUNTER= "COUNTER";
+
+	    export const counter = () => {
+		return {
+		    type : COUNTER
+		}
+	    }
+
+	and in Reduce.js and Counter.js import this file ex.
+
+	reducer.js
+	
+	    import * as actionType from './actions'
+	
+	    const reducer = (state = initialState, action) => {
+
+		if (action.type === actionType.COUNTER){
+	        return {
+	            counter : state.counter + 1
+	        }
+	    }
+
+		return state;
+	    }
+
+
+	and in Counter.js
+
+	    import * as actionType from './actions'
+
+	    const mapDispatchToProps = dispatch => {
+	    return {
+	        onIncrement: () => dispatch(actionType.counter())
+	    }
+	}
+
+
+	now to use redux-thunk...add redux-thunk to applyMiddleware as
+
+	import thunk from 'redux-thunk';
+
+	const store = createStore(reducer, applyMiddleware(logger, thunk));
+
+	now you can add async code in actions.js as ex.
+
+	Actions.js
+
+	    export const COUNTER = "COUNTER";
+	    export const NAME = "NAME";
+
+	    export const counter = () => {
+		return {
+		    type : COUNTER;
+		}
+	    }
+
+	   export const nameFun = () => {
+		return {
+		    type : NAME;
+		}
+	   }
+
+	   export const name = () => {
+		return (dispatch, getState) => {
+		    # getState() --> get current state
+		    setTimeout(() => {
+			fun(nameFun());
+		    },2000)
+		}
+	    }
