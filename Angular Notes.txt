@@ -229,7 +229,7 @@ Routing with angular:
 	
 	RouterModule.forRoute(appRouters)
 
-	and in html use folowing tag to render view dynamically
+	and in html use following tag to render view dynamically
 
 	<router-outlet></router-outlet>
 
@@ -240,7 +240,7 @@ Routing with angular:
 	for active link you can use follwing property binding
 	<a routerLink="/users" routerLinkActive="class_name"> users </a>
 	for home or empty path
-	<a routerLink="/users" routerLinkActive="class_name" [routerLinkActiveOptions] = "{exact:true}"> users </a>
+	<a routerLink="/" routerLinkActive="class_name" [routerLinkActiveOptions] = "{exact:true}"> users </a>
 
 	if you want to programatically change the route
 	inject the follwing in constructor
@@ -276,8 +276,8 @@ Routing with angular:
 
 	[note] - to preserve query param add following to navigate method.
 	{ queryParamsHandling: "merge or preserve" }
-	merge the old parma with new.
-	preserve replace new pram with old
+	merge the old param with new.
+	preserve replace new param with old
 
 	child router(nested router):
 		const appRouters : Routes = [
@@ -299,7 +299,7 @@ Routing with angular:
 
 Gurading route with canActivate or canActivateChild
 
-there are other two guard aslo 1. canDeactivate, 2. resolve
+there are other two guard also 1. canDeactivate, 2. resolve
 
 import {
   CanActivate,
@@ -551,7 +551,7 @@ Angular Form(Reactive form)
 	      console.log(status) 
 	   })   ------> gives valid or invalid status
 
-   setVslue and patchValue
+   setValue and patchValue
 
 	this.formObj.setValue({
 	   'profile' = new FormGroup({
@@ -626,7 +626,8 @@ Angular http:
 
 	[NOTE] tap ----> executing code or do some calculation without altering data like map or reduce.
 
-	Intercepter: ----> use to modify req and res object for every http request response. to create
+Intercepter: ----> use to modify req and res object for every http request response. to create
+(interceptor is nothing but a service)
 
 	import {
 	  HttpInterceptor,

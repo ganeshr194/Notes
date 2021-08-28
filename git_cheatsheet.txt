@@ -457,6 +457,28 @@ git advance
         you can then merge or rebase this branch into another branch like master.
 
 
+    git blame-
+	
+	The git blame command is used to examine the contents of a file line by line and see when each line
+	was last modified and who the author of the modifications was
+	
+	git blame <filename> -----> show all the contain of specified file line by line with modification history.
+	    ex. git blame sample.txt
+
+	git blame -L 1,5 <filename> -----> The -L option will restrict the output to the requested line range.
+					   in this example show lines from line 1 to line 5
+	
+	git blame -L 1,+10 <filename> -----> The -L option will restrict the output to the requested line range.
+					    in this example show lines from line 1 to next 10 lines
+
+	flags-
+	    -e ---> The -e option shows the authors email address instead of username.
+	    -w ---> The -w option ignores whitespace changes
+	    -M ---> The -M option detects moved or copied lines within in the same file.
+		    This will report the original author of the lines instead of the last author that moved or copied the lines.
+	    -c ---> The -C option detects lines that were moved or copied from other files.
+		    This will report the original author of the lines instead of the last author that moved or copied the lines.
+
 git garbage collection:
 
     - garbage collection is used to cleanup unreachable(object that has no reference) objects and optimize the code.

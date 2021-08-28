@@ -134,6 +134,7 @@ Person.js
 
 
 -------State
+
     While props allow you to pass data down the component tree (and hence trigger an UI update),
     state is used to change the component, well, state from within. Changes to state also trigger an UI update.
 
@@ -235,7 +236,7 @@ function based componant using useState method.
 	            max : 25
 	        });
 
-----Passing function ref as a props.
+---- Passing function ref as a props.
 
 	yeh, you can pass functions ref as a props to another componant and from that componant you can call that function
 
@@ -257,7 +258,7 @@ function based componant using useState method.
   
 	    render(){
 		return (
-		    <div func="this.fun">...</div>
+		    <A func="this.fun">...</A>
 		)
 	    };
 	}
